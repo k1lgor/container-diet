@@ -1,0 +1,35 @@
+# Complex: Go App with Heavy Deps
+FROM golang:1.21
+
+WORKDIR /app
+
+# Bad: Installing unnecessary tools
+RUN apt-get update && apt-get install -y \
+    vim \
+    curl \
+    git \
+    wget \
+    net-tools \
+    iputils-ping
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+# Build the app
+RUN go build -o myapp .
+
+# Bad: Not using a second stage for the runtime
+# Bad: Exposing multiple ports unnecessarily
+EXPOSE 8080 9090 22
+
+# Bad: Hardcoded credentials
+ENV AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+ENV AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+
+# Bad: Entrypoint script that might do too much
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]

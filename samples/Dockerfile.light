@@ -1,0 +1,13 @@
+# Light: Simple Static Site
+FROM nginx:alpine
+
+# Good: Using a small base image
+# Bad: Copying everything without .dockerignore check (potentially)
+
+COPY . /usr/share/nginx/html
+
+# Expose port
+EXPOSE 80
+
+# Default command
+CMD ["nginx", "-g", "daemon off;"]

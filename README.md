@@ -1,0 +1,156 @@
+# 🐳 Container Diet CLI
+
+**Slim down your Docker images with the power of AI.**
+
+Container Diet is a futuristic, AI-powered CLI tool that analyzes your Docker images and Dockerfiles to provide actionable, "sassy but helpful" optimization advice. It helps you reduce image size, improve security, and follow best practices.
+
+![Container Diet Logo](assets/logo.png)
+
+## ✨ Features
+
+- **🧠 AI-Driven Analysis**: Uses OpenAI (GPT-4o) to provide human-level, context-aware optimization tips.
+- **🐳 Docker-Themed UI**: Beautiful CLI output with Docker-brand colors and nautical icons.
+- **🏠 Local First**: Checks your local Docker daemon first to avoid unnecessary remote pulls.
+- **🛡️ Security Focused**: Detects root user violations, exposed secrets, and unnecessary packages.
+- **🎭 "Container Dietician" Persona**: Enjoy entertaining, roast-style feedback that keeps optimization fun.
+
+## 🚀 Installation
+
+### Prerequisites
+
+- Go 1.21+
+- Docker or Podman running locally
+- OpenAI API Key
+
+### Build from Source
+
+```bash
+git clone https://github.com/k1lgor/container-diet.git
+cd container-diet
+go mod tidy
+go build -o container-diet cmd/cli/main.go
+```
+
+## ⚙️ Configuration
+
+You must set your OpenAI API key before running the tool:
+
+**Linux/macOS:**
+
+```bash
+export OPENAI_API_KEY="sk-..."
+```
+
+**Windows (PowerShell):**
+
+```powershell
+$env:OPENAI_API_KEY="sk-..."
+```
+
+## 📖 Usage
+
+### Analyze a Local Image
+
+```bash
+go install github.com/k1lgor/container-diet/cmd/cli@latest
+```
+
+### Analyze with Dockerfile Context
+
+Providing the Dockerfile gives the AI more context for better suggestions.
+
+```bash
+./container-diet analyze my-app:latest --dockerfile Dockerfile
+```
+
+### Analyze a Remote Image
+
+By default, the tool only looks locally. Use `--remote` to pull from a registry.
+
+```bash
+./container-diet analyze python:3.9-slim --remote
+```
+
+### Full Help
+
+```bash
+./container-diet analyze --help
+```
+
+## 🎮 Demo Output
+
+Here is what happens when you feed the **"Nightmare Monolith"** Dockerfile to the Container Dietician:
+
+**Command:**
+
+```bash
+./container-diet analyze --dockerfile samples/Dockerfile.nightmare
+```
+
+**Output:**
+
+```text
+Reading Dockerfile: samples/Dockerfile.nightmare...
+
+🐳 [AI ANALYSIS COMPLETE]
+Asking the Container Dietician for insights... 🚢
+
+Oh, honey, what do we have here? A "Monolith Monster" Dockerfile that's about to sink your ship
+with its fatty layers and spicy security risks! Let’s roll up our sleeves and clean this galactic
+mess. 🚀
+
+---
+
+⚠ WARNING: Version Drift Alert!
+You've got a "fluffy" problem right at the start, darling! Using `ubuntu:latest` means you're
+playing roulette with your build environment. 🎰
+
+✓ SUGGESTION: Pin your base image to a specific version like `ubuntu:22.04` to keep things
+predictable.
+
+---
+
+⚠ WARNING: Apt-get Avalanche!
+Installing just about everything but the kitchen sink, are we? This is the definition of bloat,
+my dear. 🐘
+
+✓ SUGGESTION: Install only what's necessary for your app. Consider slimming it down by ditching
+`openjdk-11-jdk`, `build-essential`, `cmake`, and `gdb` unless you truly need them. Otherwise,
+you're just hoarding bytes.
+
+---
+
+⚠ WARNING: Hazardous Permissions Play!
+777 permissions? I hope you’re wearing a hard hat! This is a security risk as wide as a black
+hole. 🌌
+
+✓ SUGGESTION: Use more restrictive permissions. Typically, `chmod -R 755` or `chmod -R 644`,
+depending on what’s needed for executing.
+
+---
+
+⚠ WARNING: Root Cabal Alert!
+Running SSH as root with root login permitted? You might as well hand over the keys to the
+universe. 🔑
+
+✓ SUGGESTION: Disable root login and use a non-root user. Also, ask yourself—do you really need
+SSH in a container? Usually, it's a sign you need to rethink your strategy.
+
+---
+
+Oh, darling, let’s trim down that bloated ship before it swallows a sun. Your future workloads
+will thank you for the speed and safety tunes! Now, get to work, 🛠️ and remember: less is always
+more. 🐳✨
+```
+
+## 🏗️ Project Structure
+
+- `cmd/cli`: Main entry point for the CLI.
+- `internal/cli`: CLI command definitions and logic.
+- `internal/ai`: OpenAI client integration.
+- `internal/analyzer`: Core image analysis logic (layers, size, config).
+- `samples/`: Collection of Dockerfiles for testing (Light to Nightmare).
+
+## 📄 License
+
+MIT

@@ -1,0 +1,27 @@
+# Advanced: Python App (Flawed Multi-stage)
+FROM python:3.9 as builder
+
+WORKDIR /app
+
+COPY requirements.txt .
+# Bad: Not using virtualenv, installing globally in builder
+RUN pip install --user -r requirements.txt
+
+COPY . .
+
+# Second stage
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# Bad: Copying from builder but maybe missing dependencies or paths
+COPY --from=builder /root/.local /root/.local
+COPY --from=builder /app /app
+
+# Bad: Path not updated for --user installs
+ENV PATH=/root/.local/bin:$PATH
+
+# Bad: Secrets in ENV
+ENV DB_PASSWORD=supersecretpassword
+
+CMD ["python", "app.py"]

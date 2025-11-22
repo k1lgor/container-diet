@@ -1,0 +1,38 @@
+# Nightmare: The Monolith
+FROM ubuntu:latest
+
+# Bad: No version pinning
+# Bad: Installing EVERYTHING
+RUN apt-get update
+RUN apt-get install -y python3
+RUN apt-get install -y nodejs
+RUN apt-get install -y npm
+RUN apt-get install -y openjdk-11-jdk
+RUN apt-get install -y openssh-server
+RUN apt-get install -y supervisor
+RUN apt-get install -y build-essential
+RUN apt-get install -y cmake
+RUN apt-get install -y gdb
+
+# Bad: Enabling SSH for root
+RUN mkdir /var/run/sshd
+RUN echo 'root:password123' | chpasswd
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+# Bad: Copying entire root context
+COPY . /app
+WORKDIR /app
+
+# Bad: 777 permissions
+RUN chmod -R 777 /app
+
+# Bad: Supervisor configuration inline
+RUN echo "[supervisord]" > /etc/supervisor/conf.d/supervisord.conf
+RUN echo "nodaemon=true" >> /etc/supervisor/conf.d/supervisord.conf
+RUN echo "[program:app]" >> /etc/supervisor/conf.d/supervisord.conf
+RUN echo "command=python3 /app/main.py" >> /etc/supervisor/conf.d/supervisord.conf
+
+# Bad: Exposing SSH port
+EXPOSE 22 80 443
+
+CMD ["/usr/bin/supervisord"]

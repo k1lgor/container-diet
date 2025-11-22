@@ -1,0 +1,21 @@
+# Intermediate: Node.js App (Single Stage)
+FROM node:18
+
+# Bad: Using full node image instead of slim/alpine
+# Bad: No working directory specified initially
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Bad: Installing dev dependencies in production image
+RUN npm install
+
+# Copy source
+COPY . .
+
+# Bad: Running as root
+EXPOSE 3000
+
+CMD ["npm", "start"]
