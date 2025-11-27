@@ -29,6 +29,27 @@ function App() {
     <div>
       <div className="scanlines"></div>
 
+      {/* Product Hunt Badge */}
+      <a
+        href="https://www.producthunt.com/products/container-diet?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-container&#0045;diet"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          position: "absolute",
+          top: "1rem",
+          left: "1rem",
+          zIndex: 100,
+        }}
+      >
+        <img
+          src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1041412&theme=light&t=1764229267121"
+          alt="Container Diet - Slim down your Docker images with AI-powered sass. 🐳💅 | Product Hunt"
+          style={{ width: "250px", height: "54px" }}
+          width="250"
+          height="54"
+        />
+      </a>
+
       {/* GitHub Stars Badge */}
       <a
         href="https://github.com/k1lgor/container-diet"
