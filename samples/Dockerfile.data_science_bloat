@@ -1,0 +1,45 @@
+# 🐍 Data Science Bloat - The Python Snake that ate an Elephant
+FROM python:3.9
+
+# ❌ BAD: Update in separate layer
+RUN apt-get update
+
+# ❌ BAD: Install build tools in separate layers
+RUN apt-get install -y gcc
+RUN apt-get install -y g++
+RUN apt-get install -y make
+RUN apt-get install -y cmake
+RUN apt-get install -y gfortran
+RUN apt-get install -y libopenblas-dev
+RUN apt-get install -y liblapack-dev
+RUN apt-get install -y libpng-dev
+RUN apt-get install -y libfreetype6-dev
+
+# ❌ BAD: Install heavy python libraries one by one (no cache usage, many layers)
+RUN pip install numpy
+RUN pip install pandas
+RUN pip install scipy
+RUN pip install scikit-learn
+RUN pip install matplotlib
+RUN pip install seaborn
+RUN pip install jupyter
+RUN pip install notebook
+RUN pip install altair
+RUN pip install bokeh
+RUN pip install plotly
+
+# ❌ BAD: The heavyweights
+RUN pip install tensorflow
+RUN pip install torch torchvision torchaudio
+
+# ❌ BAD: Simulate downloading a massive dataset and keeping it
+RUN mkdir /data
+RUN dd if=/dev/zero of=/data/training_set.csv bs=1M count=500
+RUN dd if=/dev/zero of=/data/test_set.csv bs=1M count=200
+
+# ❌ BAD: Copy everything, including local venv or .git if present
+COPY . /app
+
+# ❌ BAD: Running as root
+WORKDIR /app
+CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--allow-root"]

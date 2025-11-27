@@ -1,0 +1,61 @@
+# 🏗️ Build Hell - Compiling the World
+FROM debian:bullseye
+
+# ❌ BAD: Install build tools individually
+RUN apt-get update
+RUN apt-get install -y build-essential
+RUN apt-get install -y autoconf
+RUN apt-get install -y automake
+RUN apt-get install -y libtool
+RUN apt-get install -y pkg-config
+RUN apt-get install -y git
+RUN apt-get install -y wget
+RUN apt-get install -y curl
+RUN apt-get install -y unzip
+RUN apt-get install -y zip
+RUN apt-get install -y bison
+RUN apt-get install -y flex
+RUN apt-get install -y yasm
+RUN apt-get install -y nasm
+
+# ❌ BAD: Compile FFmpeg from source (keeping all intermediate files)
+WORKDIR /build/ffmpeg
+RUN git clone https://git.ffmpeg.org/ffmpeg.git .
+RUN ./configure --disable-x86asm
+RUN make -j4
+RUN make install
+
+# ❌ BAD: Compile Boost (huge)
+WORKDIR /build/boost
+RUN wget https://boostorg.jfrog.io/artifactory/main/release/1.79.0/source/boost_1_79_0.tar.gz
+RUN tar xzvf boost_1_79_0.tar.gz
+WORKDIR /build/boost/boost_1_79_0
+RUN ./bootstrap.sh
+RUN ./b2 install
+
+# ❌ BAD: Compile OpenCV
+WORKDIR /build/opencv
+RUN git clone https://github.com/opencv/opencv.git .
+RUN mkdir build
+WORKDIR /build/opencv/build
+RUN cmake ..
+RUN make -j4
+RUN make install
+
+# ❌ BAD: Copy source code into the final image
+COPY . /src
+
+# ❌ BAD: Excessive ENV vars creating layers
+ENV APP_HOME=/app
+ENV APP_USER=builder
+ENV DEBUG=true
+ENV LOG_LEVEL=verbose
+ENV BUILD_DATE=today
+ENV VERSION=1.0.0
+ENV AUTHOR=me
+ENV TEAM=devops
+ENV REGION=us-east-1
+ENV STAGE=dev
+
+WORKDIR /app
+CMD ["/bin/bash"]

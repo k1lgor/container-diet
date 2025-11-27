@@ -1,0 +1,57 @@
+# 🏛️ Legacy Monolith - The "We'll fix it later" Special
+FROM ubuntu:18.04
+
+# ❌ BAD: Old base image, no pinning
+LABEL maintainer="bob@legacy-corp.com"
+
+# ❌ BAD: Update and upgrade separately
+RUN apt-get update
+RUN apt-get upgrade -y
+
+# ❌ BAD: Install EVERYTHING
+RUN apt-get install -y apache2
+RUN apt-get install -y mysql-server
+RUN apt-get install -y php libapache2-mod-php php-mysql
+RUN apt-get install -y python3 python3-pip
+RUN apt-get install -y nodejs npm
+RUN apt-get install -y ruby-full
+RUN apt-get install -y openjdk-8-jdk
+RUN apt-get install -y golang-go
+RUN apt-get install -y rustc cargo
+
+# ❌ BAD: Compile ImageMagick from source (and leave source)
+WORKDIR /usr/src
+RUN apt-get install -y wget build-essential
+RUN wget https://imagemagick.org/archive/ImageMagick.tar.gz
+RUN tar xvzf ImageMagick.tar.gz
+RUN cd ImageMagick-* && ./configure && make && make install
+# Note: We didn't delete the tar.gz or the source dir!
+
+# ❌ BAD: Install legacy tools
+RUN apt-get install -y telnet ftp net-tools vim nano emacs
+
+# ❌ BAD: Create a massive log directory
+RUN mkdir -p /var/log/legacy-app
+RUN dd if=/dev/zero of=/var/log/legacy-app/old_logs.tar.gz bs=1M count=1024
+
+# ❌ BAD: 777 Permissions
+RUN chmod -R 777 /var/www/html
+RUN chmod -R 777 /var/log
+
+# ❌ BAD: Expose every port imaginable
+EXPOSE 80
+EXPOSE 443
+EXPOSE 3306
+EXPOSE 8080
+EXPOSE 3000
+EXPOSE 22
+EXPOSE 21
+EXPOSE 25
+EXPOSE 5432
+EXPOSE 6379
+
+# ❌ BAD: Supervisor to run it all
+RUN apt-get install -y supervisor
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+CMD ["/usr/bin/supervisord"]
