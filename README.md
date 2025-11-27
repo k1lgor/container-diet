@@ -22,6 +22,12 @@ Container Diet is a futuristic, AI-powered CLI tool that analyzes your Docker im
 - Docker or Podman running locally
 - OpenAI API Key
 
+### Install via Go
+
+```bash
+go install github.com/k1lgor/container-diet/cmd/cli@latest
+```
+
 ### Build from Source
 
 ```bash
@@ -52,7 +58,7 @@ $env:OPENAI_API_KEY="sk-..."
 ### Analyze a Local Image
 
 ```bash
-go install github.com/k1lgor/container-diet/cmd/cli@latest
+container-diet analyze my-app:latest
 ```
 
 ### Analyze with Dockerfile Context
@@ -149,8 +155,8 @@ more. 🐳✨
 - `internal/cli`: CLI command definitions and logic.
 - `internal/ai`: OpenAI client integration.
 - `internal/analyzer`: Core image analysis logic (layers, size, config).
-- `samples/`: Collection of Dockerfiles for testing (Light to Nightmare).
+- `samples/`: Collection of Dockerfiles for testing (Light to Nightmare). [See demo outputs](samples/README.md).
 
 ## 📄 License
 
-MIT
+[MIT](LICENSE)
