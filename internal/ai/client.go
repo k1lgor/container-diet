@@ -54,6 +54,7 @@ Focus on:
 2. Unnecessary packages or build tools.
 3. Security risks (e.g., running as root, secrets).
 4. Multi-stage build opportunities.
+5. Package manager caching (e.g., apt cache, pip cache, npm cache).
 `
 
 	if analysis != nil {
