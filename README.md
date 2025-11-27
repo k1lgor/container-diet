@@ -4,7 +4,7 @@
 
 Container Diet is a futuristic, AI-powered CLI tool that analyzes your Docker images and Dockerfiles to provide actionable, "sassy but helpful" optimization advice. It helps you reduce image size, improve security, and follow best practices.
 
-![Container Diet Logo](assets/logo.png)
+<img src="assets/logo.png" alt="Container Diet Logo" width="250"/>
 
 ## ✨ Features
 
