@@ -52,13 +52,26 @@ jobs:
     needs: build-and-release
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
 
+      - name: Build Changelog
+        id: build_changelog
+        uses: mikepenz/release-changelog-builder-action@v5
+        with:
+          configuration: ".github/changelog_config.json"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: artifacts/**/*
-          generate_release_notes: true
+          body: ${{ steps.build_changelog.outputs.changelog }}

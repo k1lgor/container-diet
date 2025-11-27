@@ -1,0 +1,29 @@
+{
+  "categories": [
+    {
+      "title": "## 🚀 Features",
+      "labels": ["feat", "feature"]
+    },
+    {
+      "title": "## 🐛 Bug Fixes",
+      "labels": ["fix", "bug"]
+    },
+    {
+      "title": "## 🧰 Maintenance",
+      "labels": ["chore", "refactor", "docs", "style", "test"]
+    },
+    {
+      "title": "## 💬 Other",
+      "labels": []
+    }
+  ],
+  "template": "#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
+  "pr_template": "- #{{TITLE}}",
+  "empty_template": "- No changes found",
+  "label_extractor": [
+    {
+      "pattern": "^(feat|fix|chore|refactor|docs|style|test)\\(?\\w*\\)?: (.*)",
+      "target": "$1"
+    }
+  ]
+}
