@@ -12,7 +12,7 @@ Container Diet is a futuristic, AI-powered CLI tool that analyzes your Docker im
 
 - **🧠 AI-Driven Analysis**: Uses OpenAI (GPT-4o) to provide human-level, context-aware optimization tips.
 - **🐳 Docker-Themed UI**: Beautiful CLI output with Docker-brand colors and nautical icons.
-- **🏠 Local First**: Checks your local Docker daemon first to avoid unnecessary remote pulls.
+- **🏠 Flexible Image Source**: Analyze local daemon images, pull remote images with `--remote`, or auto-pull missing local images with `--pull-missing`.
 - **🛡️ Security Focused**: Detects root user violations, exposed secrets, and unnecessary packages.
 - **🎭 "Container Dietician" Persona**: Enjoy entertaining, roast-style feedback that keeps optimization fun.
 
@@ -21,7 +21,8 @@ Container Diet is a futuristic, AI-powered CLI tool that analyzes your Docker im
 ### Prerequisites
 
 - Go 1.21+
-- Docker or Podman running locally
+- Docker daemon running locally (required for local image analysis)
+- Optional: Podman via Docker-compatible API socket
 - OpenAI API Key
 
 ### Install via Go
@@ -73,11 +74,23 @@ Providing the Dockerfile gives the AI more context for better suggestions.
 
 ### Analyze a Remote Image
 
-By default, the tool only looks locally. Use `--remote` to pull from a registry.
+Use `--remote` to pull directly from a registry and analyze without requiring a local daemon image.
 
 ```bash
 ./container-diet analyze python:3.9-slim --remote
 ```
+
+### Pull Missing Local Images Automatically
+
+Use `--pull-missing` to keep local-first behavior, but auto-pull if the image is missing locally.
+
+```bash
+./container-diet analyze busybox --pull-missing
+```
+
+### Podman Compatibility
+
+For local analysis with Podman, expose Podman's Docker-compatible API socket and set `DOCKER_HOST` to it.
 
 ### Full Help
 

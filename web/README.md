@@ -8,12 +8,13 @@ The official landing page for the **Container Diet CLI**. This project is a mode
 
 - **🎨 Futuristic Design**: Deep space theme with neon accents and glassmorphism.
 - **💻 Terminal Simulation**: A hero section featuring a typing terminal animation that demonstrates the CLI in action.
+- **🛰️ Source Flexibility Messaging**: Highlights `--remote` and `--pull-missing` workflows from CLI v0.2.0.
 - **⚡ Modern Tech Stack**: Built with **Vite**, **React**, and **TypeScript** for blazing fast performance.
 - **📱 Responsive**: Fully responsive design that looks great on all devices.
 
 ## 🛠️ Tech Stack
 
-- **Framework**: React 18
+- **Framework**: React 19
 - **Build Tool**: Vite
 - **Language**: TypeScript
 - **Styling**: Vanilla CSS (Custom Variables & Animations)
