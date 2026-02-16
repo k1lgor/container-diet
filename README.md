@@ -14,6 +14,7 @@ Container Diet is a futuristic, AI-powered CLI tool that analyzes your Docker im
 - **🐳 Docker-Themed UI**: Beautiful CLI output with Docker-brand colors and nautical icons.
 - **🏠 Flexible Image Source**: Analyze local daemon images, pull remote images with `--remote`, or auto-pull missing local images with `--pull-missing`.
 - **🛡️ Security Focused**: Detects root user violations, exposed secrets, and unnecessary packages.
+- **🛠️ Auto-Fix**: Automatically generate an optimized version of your Dockerfile with the `--auto-fix` flag.
 - **🎭 "Container Dietician" Persona**: Enjoy entertaining, roast-style feedback that keeps optimization fun.
 
 ## 🚀 Installation
@@ -87,6 +88,16 @@ Use `--pull-missing` to keep local-first behavior, but auto-pull if the image is
 ```bash
 ./container-diet analyze busybox --pull-missing
 ```
+
+### 🛠️ Automatically Generate Fixes (Auto-Fix)
+
+The most powerful feature! Use `--auto-fix` to have the Container Dietician write the optimized Dockerfile for you.
+
+```bash
+./container-diet analyze --dockerfile Dockerfile --auto-fix
+```
+
+This will generate a `Dockerfile.diet` file in the same directory. You can then compare it with your original and apply the improvements. **Works even without a source Dockerfile** by reverse-engineering the image layers!
 
 ### Podman Compatibility
 
