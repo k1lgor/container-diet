@@ -19,6 +19,7 @@ var (
 	model          string
 	remote         bool
 	pullMissing    bool
+	autoFix        bool
 	neon           = color.New(color.FgHiCyan, color.Bold).SprintFunc()
 	aurora         = color.New(color.FgHiMagenta, color.Bold).SprintFunc()
 	success        = color.New(color.FgHiGreen, color.Bold).SprintFunc()
@@ -87,12 +88,28 @@ var analyzeCmd = &cobra.Command{
 		}
 
 		fmt.Println(aurora("🚢 Asking the Container Dietician for insights..."))
-		advice, err := aiClient.AnalyzeReport(analysis, dockerfileContent, model)
+		result, err := aiClient.AnalyzeReport(analysis, dockerfileContent, model, autoFix)
 		if err != nil {
 			fmt.Printf("%s %v\n", fail("✖ Error getting AI advice:"), err)
 		} else {
-			fmt.Printf("\n%s\n%s\n", neon(strings.Repeat("=", 64)), advice)
-			fmt.Println(success("✓ Analysis complete"))
+			fmt.Printf("\n%s\n%s\n", neon(strings.Repeat("=", 64)), result.Advice)
+
+			if autoFix && result.Fix != "" {
+				fixPath := "Dockerfile.diet"
+				if dockerfilePath != "" {
+					fixPath = dockerfilePath + ".diet"
+				}
+
+				fmt.Printf("\n%s %s\n", neon("🛠️  AUTO-FIX GENERATED:"), aurora(fixPath))
+				err := os.WriteFile(fixPath, []byte(result.Fix), 0644)
+				if err != nil {
+					fmt.Printf("%s %v\n", fail("✖ Error saving fixed Dockerfile:"), err)
+				} else {
+					fmt.Printf("%s Recommended changes saved to %s. Compare and apply them to slim down that image! 📉\n", success("✓"), success(fixPath))
+				}
+			}
+
+			fmt.Println(success("\n✓ Analysis complete"))
 		}
 	},
 }
@@ -103,6 +120,7 @@ func init() {
 	analyzeCmd.Flags().StringVar(&model, "model", "gpt-4o", "AI model to use for analysis")
 	analyzeCmd.Flags().BoolVar(&remote, "remote", false, "Allow pulling image from remote registry if not found locally")
 	analyzeCmd.Flags().BoolVar(&pullMissing, "pull-missing", false, "When local image is missing, pull it from remote and continue analysis")
+	analyzeCmd.Flags().BoolVar(&autoFix, "auto-fix", false, "Generate an optimized version of the Dockerfile")
 	rootCmd.AddCommand(analyzeCmd)
 }
 
