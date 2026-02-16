@@ -17,13 +17,42 @@
       "labels": []
     }
   ],
-  "template": "#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
+  "template": "#{{CHANGELOG}}",
   "pr_template": "- #{{TITLE}}",
   "empty_template": "- No changes found",
+  "ignore_labels": ["ignore"],
   "label_extractor": [
     {
-      "pattern": "^(feat|fix|chore|refactor|docs|style|test)\\(?\\w*\\)?: (.*)",
-      "target": "$1"
+      "pattern": ".*bump version to.*",
+      "target": "ignore"
+    },
+    {
+      "pattern": "^feat.*:",
+      "target": "feat"
+    },
+    {
+      "pattern": "^fix.*:",
+      "target": "fix"
+    },
+    {
+      "pattern": "^chore.*:",
+      "target": "chore"
+    },
+    {
+      "pattern": "^docs.*:",
+      "target": "docs"
+    },
+    {
+      "pattern": "^refactor.*:",
+      "target": "refactor"
+    },
+    {
+      "pattern": "^style.*:",
+      "target": "style"
+    },
+    {
+      "pattern": "^test.*:",
+      "target": "test"
     }
   ]
 }
