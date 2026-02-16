@@ -7,14 +7,19 @@ function App() {
 
   const commands = [
     {
-      text: "container-diet analyze nginx:latest --dockerfile Dockerfile",
+      text: "container-diet analyze python:3.9 --auto-fix",
       output: [
-        "Reading Dockerfile: Dockerfile...",
-        "Connecting to Docker daemon...",
-        "Inspecting image layers (4 total)...",
+        "🔍 Scanning image: python:3.9",
+        "Pulling from remote...",
+        "Analyzing remote image: python:3.9",
         "",
-        "🐳 [AI ANALYSIS COMPLETE]",
-        "Asking the Container Dietician for insights... 🚢",
+        "📊 IMAGE SUMMARY",
+        "📦 Image: python:3.9",
+        "📊 Total Size: 386.32 MB",
+        "🍰 Layers: 7",
+        "",
+        "🤖 [AI ANALYSIS]",
+        "🚢 Asking the Container Dietician for insights...",
       ],
     },
   ];
@@ -115,7 +120,7 @@ function App() {
             <div className="hero-text">
               <div className="version-badge">
                 <span className="status-dot"></span>
-                <span className="version-text">v0.2.0 Now Available</span>
+                <span className="version-text">v0.3.0 Now Available</span>
               </div>
 
               <h1 className="hero-title">
@@ -213,26 +218,30 @@ function App() {
                   {completedCommands.length === commands.length && (
                     <div className="ai-response">
                       <div className="warning-box">
-                        <span className="warning-label">⚠ WARNING:</span>{" "}
-                        Running as root in containers is risky! Your app could
-                        use protection.
+                        <span className="warning-label">⚠ WARNING:</span> Your
+                        Python layer is carrying extra weight! 🐘 Using
+                        `python:3.9` instead of `3.9-slim` is like wearing lead
+                        boots for a sprint.
                       </div>
                       <div className="suggestion-box">
                         <span className="suggestion-label">✓ SUGGESTION:</span>{" "}
-                        Add a non-root user for better security:
+                        Switch to a slim base or use a multi-stage build to
+                        purge build tools like `gcc` and `make`.
+                      </div>
+                      <div className="autofix-box">
+                        <div className="autofix-header">
+                          <span className="autofix-label">
+                            🛠️ AUTO-FIX GENERATED
+                          </span>
+                          <span className="autofix-path">Dockerfile.diet</span>
+                        </div>
                         <pre className="code-snippet">
-                          {`RUN adduser --disabled-password appuser
+                          {`FROM python:3.9-slim AS final
+# Purged 220MB of build tools! 📉
+RUN apt-get update && apt-get install -y --no-install-recommends \\
+    libpq5 && rm -rf /var/lib/apt/lists/*
 USER appuser`}
                         </pre>
-                      </div>
-                      <div className="warning-box">
-                        <span className="warning-label">⚠ WARNING:</span> Layer
-                        3 (45MB) contains build tools like gcc and make.
-                      </div>
-                      <div className="suggestion-box">
-                        <span className="suggestion-label">✓ SUGGESTION:</span>{" "}
-                        Use multi-stage build to remove build dependencies from
-                        final image.
                       </div>
                     </div>
                   )}
@@ -281,6 +290,16 @@ USER appuser`}
                 Detects root user violations, exposed secrets, unnecessary
                 packages, and permission issues. Keep your containers secure by
                 default.
+              </p>
+            </div>
+
+            <div className="feature-card highlighted">
+              <div className="feature-icon accent">🛠️</div>
+              <h3 className="feature-title">Auto-Fix Generation</h3>
+              <p className="feature-description">
+                Automatically generate an optimized Dockerfile (Dockerfile.diet)
+                based on analysis. Purge build tools, optimize layers, and apply
+                security best practices in one command.
               </p>
             </div>
           </div>
