@@ -2,12 +2,14 @@ package ai
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/k1lgor/container-diet/internal/analyzer"
 )
@@ -17,7 +19,8 @@ type AIClient interface {
 }
 
 type OpenAIClient struct {
-	APIKey string
+	APIKey     string
+	HTTPClient *http.Client
 }
 
 func NewOpenAIClient() (*OpenAIClient, error) {
@@ -25,7 +28,12 @@ func NewOpenAIClient() (*OpenAIClient, error) {
 	if apiKey == "" {
 		return nil, fmt.Errorf("OPENAI_API_KEY environment variable not set")
 	}
-	return &OpenAIClient{APIKey: strings.TrimSpace(apiKey)}, nil
+	return &OpenAIClient{
+		APIKey: strings.TrimSpace(apiKey),
+		HTTPClient: &http.Client{
+			Timeout: 90 * time.Second,
+		},
+	}, nil
 }
 
 func (c *OpenAIClient) AnalyzeReport(analysis *analyzer.ImageAnalysis, dockerfileContent string, model string) (string, error) {
@@ -34,8 +42,8 @@ func (c *OpenAIClient) AnalyzeReport(analysis *analyzer.ImageAnalysis, dockerfil
 	}
 
 	// Prepare the prompt
-	var prompt string
-	prompt = `
+	var promptBuilder strings.Builder
+	promptBuilder.WriteString(`
 You are the "Container Dietician", a ruthless but helpful AI expert dedicated to slimming down bloated Docker images.
 Your goal is to roast the user's configuration slightly while providing critical optimization advice. Make it entertaining but useful.
 
@@ -55,26 +63,27 @@ Focus on:
 3. Security risks (e.g., running as root, secrets).
 4. Multi-stage build opportunities.
 5. Package manager caching (e.g., apt cache, pip cache, npm cache).
-`
+`)
 
 	if analysis != nil {
-		prompt += fmt.Sprintf(`
+		promptBuilder.WriteString(fmt.Sprintf(`
 IMAGE ANALYSIS:
 Image Name: %s
 Total Size: %d bytes
 Layers:
-`, analysis.ImageName, analysis.TotalSize)
+`, analysis.ImageName, analysis.TotalSize))
 		for i, l := range analysis.Layers {
-			prompt += fmt.Sprintf("%d. Size: %d bytes, Command: %s\n", i+1, l.Size, l.Command)
+			promptBuilder.WriteString(fmt.Sprintf("%d. Size: %d bytes, Command: %s\n", i+1, l.Size, l.Command))
 		}
 	}
 
 	if dockerfileContent != "" {
-		prompt += fmt.Sprintf(`
+		promptBuilder.WriteString(fmt.Sprintf(`
 DOCKERFILE CONTENT:
 %s
-`, dockerfileContent)
+`, dockerfileContent))
 	}
+	prompt := promptBuilder.String()
 
 	requestBody, err := json.Marshal(map[string]interface{}{
 		"model": model,
@@ -87,7 +96,10 @@ DOCKERFILE CONTENT:
 		return "", fmt.Errorf("failed to marshal request: %w", err)
 	}
 
-	req, err := http.NewRequest("POST", "https://api.openai.com/v1/chat/completions", bytes.NewBuffer(requestBody))
+	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(ctx, "POST", "https://api.openai.com/v1/chat/completions", bytes.NewBuffer(requestBody))
 	if err != nil {
 		return "", fmt.Errorf("failed to create request: %w", err)
 	}
@@ -95,8 +107,7 @@ DOCKERFILE CONTENT:
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+c.APIKey)
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		return "", fmt.Errorf("failed to send request: %w", err)
 	}
@@ -117,9 +128,18 @@ DOCKERFILE CONTENT:
 		return "", fmt.Errorf("invalid response format")
 	}
 
-	firstChoice := choices[0].(map[string]interface{})
-	message := firstChoice["message"].(map[string]interface{})
-	content := message["content"].(string)
+	firstChoice, ok := choices[0].(map[string]interface{})
+	if !ok {
+		return "", fmt.Errorf("invalid response format: choice")
+	}
+	message, ok := firstChoice["message"].(map[string]interface{})
+	if !ok {
+		return "", fmt.Errorf("invalid response format: message")
+	}
+	content, ok := message["content"].(string)
+	if !ok {
+		return "", fmt.Errorf("invalid response format: content")
+	}
 
 	return content, nil
 }
