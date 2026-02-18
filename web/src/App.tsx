@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import confetti from "canvas-confetti";
+import { Scene3D } from "./components/Scene3D";
 
 function App() {
   const [commandIndex, setCommandIndex] = useState(0);
@@ -49,6 +52,43 @@ function App() {
     return () => clearInterval(typeInterval);
   }, [commandIndex]);
 
+  useEffect(() => {
+    if (completedCommands.length === commands.length) {
+      const duration = 3 * 1000;
+      const animationEnd = Date.now() + duration;
+      const defaults = {
+        startVelocity: 30,
+        spread: 360,
+        ticks: 60,
+        zIndex: 0,
+        colors: ["#2496ED", "#086DD7", "#00BBFF", "#75AADB", "#ffffff"],
+      };
+
+      const randomInRange = (min: number, max: number) =>
+        Math.random() * (max - min) + min;
+
+      const interval = setInterval(function () {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+        });
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+        });
+      }, 250);
+    }
+  }, [completedCommands.length]);
+
   const [stars, setStars] = useState<number | null>(null);
 
   useEffect(() => {
@@ -60,19 +100,32 @@ function App() {
 
   return (
     <div className="app-container">
+      {/* Docker grid overlay */}
       <div className="scanlines"></div>
+
+      {/* 3D Scene Background */}
+      <Scene3D />
+
+      {/* Ambient glow orbs */}
       <div className="background-decoration">
         <div className="glow-orb glow-orb-top"></div>
         <div className="glow-orb glow-orb-bottom"></div>
       </div>
 
-      {/* Header */}
+      {/* ─── Header ─── */}
       <header className="header">
-        <div className="header-content">
+        <motion.div
+          className="header-content"
+          initial={{ y: -80, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
           <div className="logo">
+            <span className="logo-whale">🐳</span>
             <h2 className="logo-text">
               Container <span className="logo-highlight">Diet</span>
             </h2>
+            <span className="logo-version">v0.3.0</span>
           </div>
 
           <div className="header-badges">
@@ -110,17 +163,28 @@ function App() {
               {stars !== null && <span className="star-count">{stars}</span>}
             </a>
           </div>
-        </div>
+        </motion.div>
       </header>
 
-      {/* Hero Section */}
+      {/* ─── Main Content ─── */}
       <main className="main-content">
+        {/* Hero Section */}
         <section className="hero">
           <div className="hero-content">
-            <div className="hero-text">
+            {/* Left: Hero Text */}
+            <motion.div
+              className="hero-text"
+              initial={{ x: -60, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{
+                duration: 0.8,
+                delay: 0.2,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
               <div className="version-badge">
                 <span className="status-dot"></span>
-                <span className="version-text">v0.3.0 Now Available</span>
+                <span>v0.3.0 — Now Available</span>
               </div>
 
               <h1 className="hero-title">
@@ -135,7 +199,9 @@ function App() {
               </p>
 
               <div className="cta-buttons">
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
                   className="btn btn-primary"
                   onClick={() =>
                     window.open(
@@ -146,8 +212,10 @@ function App() {
                 >
                   <span className="btn-icon">⬇</span>
                   Download CLI
-                </button>
-                <button
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
                   className="btn btn-secondary"
                   onClick={() =>
                     window.open(
@@ -158,7 +226,7 @@ function App() {
                 >
                   <span className="btn-icon">{"</>"}</span>
                   View on GitHub
-                </button>
+                </motion.button>
               </div>
 
               <div className="features-list">
@@ -170,11 +238,24 @@ function App() {
                   <span className="check-icon">✓</span>
                   CI/CD Integrated
                 </div>
+                <div className="feature-item">
+                  <span className="check-icon">✓</span>
+                  Docker & Podman
+                </div>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Terminal Window */}
-            <div className="terminal-wrapper">
+            {/* Right: Terminal Window */}
+            <motion.div
+              className="terminal-wrapper"
+              initial={{ x: 60, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{
+                duration: 0.8,
+                delay: 0.4,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
               <div className="terminal-glow"></div>
               <div className="terminal-window">
                 <div className="terminal-header">
@@ -215,44 +296,72 @@ function App() {
                     </div>
                   )}
 
-                  {completedCommands.length === commands.length && (
-                    <div className="ai-response">
-                      <div className="warning-box">
-                        <span className="warning-label">⚠ WARNING:</span> Your
-                        Python layer is carrying extra weight! 🐘 Using
-                        `python:3.9` instead of `3.9-slim` is like wearing lead
-                        boots for a sprint.
-                      </div>
-                      <div className="suggestion-box">
-                        <span className="suggestion-label">✓ SUGGESTION:</span>{" "}
-                        Switch to a slim base or use a multi-stage build to
-                        purge build tools like `gcc` and `make`.
-                      </div>
-                      <div className="autofix-box">
-                        <div className="autofix-header">
-                          <span className="autofix-label">
-                            🛠️ AUTO-FIX GENERATED
-                          </span>
-                          <span className="autofix-path">Dockerfile.diet</span>
+                  <AnimatePresence>
+                    {completedCommands.length === commands.length && (
+                      <motion.div
+                        className="ai-response"
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <div className="warning-box">
+                          <span className="warning-label">⚠ WARNING:</span> Your
+                          Python layer is carrying extra weight! 🐘 Using
+                          `python:3.9` instead of `3.9-slim` is like wearing
+                          lead boots for a sprint.
                         </div>
-                        <pre className="code-snippet">
-                          {`FROM python:3.9-slim AS final
-# Purged 220MB of build tools! 📉
-RUN apt-get update && apt-get install -y --no-install-recommends \\
-    libpq5 && rm -rf /var/lib/apt/lists/*
-USER appuser`}
-                        </pre>
-                      </div>
-                    </div>
-                  )}
+                        <div className="suggestion-box">
+                          <span className="suggestion-label">
+                            ✓ SUGGESTION:
+                          </span>{" "}
+                          Switch to a slim base or use a multi-stage build to
+                          purge build tools like `gcc` and `make`.
+                        </div>
+                        <div className="autofix-box">
+                          <div className="autofix-header">
+                            <span className="autofix-label">
+                              🛠️ AUTO-FIX GENERATED
+                            </span>
+                            <span className="autofix-path">
+                              Dockerfile.diet
+                            </span>
+                          </div>
+                          <pre className="code-snippet">
+                            <span className="keyword">FROM</span>{" "}
+                            python:3.9-slim <span className="keyword">AS</span>{" "}
+                            final
+                            <span className="comment">
+                              {"\n"}# Purged 220MB of build tools! 📉
+                            </span>
+                            {"\n"}
+                            <span className="keyword">RUN</span> apt-get update
+                            && apt-get install -y --no-install-recommends \
+                            {"\n"}
+                            {"    "}
+                            <span className="highlight">libpq5</span> &&{" "}
+                            <span className="keyword">rm</span> -rf
+                            /var/lib/apt/lists/*{"\n"}
+                            <span className="keyword">USER</span> appuser
+                          </pre>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </section>
 
-        {/* Features Section */}
-        <section className="section features-section" id="features">
+        {/* ─── Features Section ─── */}
+        <motion.section
+          className="section features-section"
+          id="features"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
           <div className="section-header">
             <h2 className="section-title">AI-Powered Container Optimization</h2>
             <p className="section-description">
@@ -263,76 +372,107 @@ USER appuser`}
           </div>
 
           <div className="features-grid">
-            <div className="feature-card">
-              <div className="feature-icon purple">🧠</div>
-              <h3 className="feature-title">AI-Driven Analysis</h3>
-              <p className="feature-description">
-                Uses OpenAI (GPT-4o) to provide human-level, context-aware
-                optimization tips. Get entertaining, roast-style feedback that
-                makes optimization fun.
-              </p>
-            </div>
-
-            <div className="feature-card">
-              <div className="feature-icon cyan">🐳</div>
-              <h3 className="feature-title">Flexible Image Sources</h3>
-              <p className="feature-description">
-                Analyze local daemon images, pull remote images with --remote,
-                or auto-pull missing local images with --pull-missing. Works
-                with Docker and Podman.
-              </p>
-            </div>
-
-            <div className="feature-card">
-              <div className="feature-icon purple">🛡️</div>
-              <h3 className="feature-title">Security Focused</h3>
-              <p className="feature-description">
-                Detects root user violations, exposed secrets, unnecessary
-                packages, and permission issues. Keep your containers secure by
-                default.
-              </p>
-            </div>
-
-            <div className="feature-card highlighted">
-              <div className="feature-icon accent">🛠️</div>
-              <h3 className="feature-title">Auto-Fix Generation</h3>
-              <p className="feature-description">
-                Automatically generate an optimized Dockerfile (Dockerfile.diet)
-                based on analysis. Purge build tools, optimize layers, and apply
-                security best practices in one command.
-              </p>
-            </div>
+            {[
+              {
+                icon: "🧠",
+                iconClass: "purple",
+                title: "AI-Driven Analysis",
+                desc: "Uses OpenAI (GPT-4o) to provide human-level, context-aware optimization tips. Get entertaining, roast-style feedback that makes optimization fun.",
+              },
+              {
+                icon: "🐳",
+                iconClass: "cyan",
+                title: "Flexible Image Sources",
+                desc: "Analyze local daemon images, pull remote images with --remote, or auto-pull missing local images with --pull-missing. Works with Docker and Podman.",
+              },
+              {
+                icon: "🛡️",
+                iconClass: "purple",
+                title: "Security Focused",
+                desc: "Detects root user violations, exposed secrets, unnecessary packages, and permission issues. Keep your containers secure by default.",
+              },
+              {
+                icon: "🛠️",
+                iconClass: "accent",
+                title: "Auto-Fix Generation",
+                desc: "Automatically generate an optimized Dockerfile (Dockerfile.diet) based on analysis. Purge build tools, optimize layers, and apply security best practices in one command.",
+                highlighted: true,
+              },
+            ].map((feature, i) => (
+              <motion.div
+                key={i}
+                className={`feature-card${feature.highlighted ? " highlighted" : ""}`}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+              >
+                <div className={`feature-icon ${feature.iconClass}`}>
+                  {feature.icon}
+                </div>
+                <h3 className="feature-title">{feature.title}</h3>
+                <p className="feature-description">{feature.desc}</p>
+              </motion.div>
+            ))}
           </div>
-        </section>
+        </motion.section>
 
-        {/* Stats Section */}
-        <section className="section stats-section">
+        {/* ─── Stats Section ─── */}
+        <motion.section
+          className="section stats-section"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
           <div className="stats-grid">
-            <div className="stat-card">
-              <span className="stat-value cyan">GPT-4o</span>
-              <span className="stat-label">AI Model</span>
-            </div>
-            <div className="stat-card">
-              <span className="stat-value white">Local/Remote</span>
-              <span className="stat-label">Image Sources</span>
-            </div>
-            <div className="stat-card">
-              <span className="stat-value white">Docker + Podman</span>
-              <span className="stat-label">Platform Support</span>
-            </div>
-            <div className="stat-card">
-              <span className="stat-value purple">Open Source</span>
-              <span className="stat-label">MIT License</span>
-            </div>
+            {[
+              { value: "GPT-4o", label: "AI Model", colorClass: "cyan" },
+              {
+                value: "Local/Remote",
+                label: "Image Sources",
+                colorClass: "white",
+              },
+              {
+                value: "Docker + Podman",
+                label: "Platform Support",
+                colorClass: "white",
+              },
+              {
+                value: "Open Source",
+                label: "MIT License",
+                colorClass: "purple",
+              },
+            ].map((stat, i) => (
+              <motion.div
+                key={i}
+                className="stat-card"
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: i * 0.08 }}
+              >
+                <span className={`stat-value ${stat.colorClass}`}>
+                  {stat.value}
+                </span>
+                <span className="stat-label">{stat.label}</span>
+              </motion.div>
+            ))}
           </div>
-        </section>
+        </motion.section>
       </main>
 
-      {/* Footer */}
+      {/* ─── Footer ─── */}
       <footer className="footer">
         <div className="footer-content">
+          <div className="footer-logo">
+            <span>🐳</span>
+            <span className="logo-text">
+              Container <span className="logo-highlight">Diet</span>
+            </span>
+          </div>
           <div className="footer-copyright">
-            © 2026 Container Diet. Built for speed and security.
+            © 2026 Container Diet — Built for speed and security.
           </div>
         </div>
       </footer>
