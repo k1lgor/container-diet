@@ -37,4 +37,5 @@ web/.env.local
 Thumbs.db
 
 # Project specific
-container-diet
+.playwright-mcp/
+.agent/
