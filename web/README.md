@@ -8,7 +8,7 @@ The official landing page for the **Container Diet CLI**. This project is a mode
 
 - **🎨 Futuristic Design**: Deep space theme with neon accents and glassmorphism.
 - **💻 Terminal Simulation**: A hero section featuring a typing terminal animation that demonstrates the CLI and newly added **Auto-Fix** functionality.
-- **🛰️ Source Flexibility Messaging**: Highlights `--remote`, `--pull-missing`, and `--auto-fix` workflows from CLI v0.3.0.
+- **🛰️ Source Flexibility Messaging**: Highlights `--remote`, `--pull-missing`, and `--auto-fix` workflows from CLI v0.5.0.
 - **⚡ Modern Tech Stack**: Built with **Vite**, **React**, and **TypeScript** for blazing fast performance.
 - **📱 Responsive**: Fully responsive design that looks great on all devices.
 

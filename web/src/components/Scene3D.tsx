@@ -1,4 +1,5 @@
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useState, useEffect } from "react";
+import type { CSSProperties } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, PerspectiveCamera } from "@react-three/drei";
 import * as THREE from "three";
@@ -299,23 +300,33 @@ function GlowCore() {
   );
 }
 
+const sceneContainerStyle: CSSProperties = {
+  position: "absolute",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  zIndex: 0,
+  pointerEvents: "none",
+  background:
+    "radial-gradient(ellipse at 30% 20%, rgba(36,150,237,0.12) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(8,109,215,0.08) 0%, transparent 50%), linear-gradient(180deg, #050d1a 0%, #0a1628 50%, #050d1a 100%)",
+};
+
 export function Scene3D() {
+  const [reduceMotion, setReduceMotion] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const handler = (e: MediaQueryListEvent) => setReduceMotion(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
   return (
-    <div
-      className="scene-container"
-      style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        zIndex: 0,
-        pointerEvents: "none",
-        background:
-          "radial-gradient(ellipse at 30% 20%, rgba(36,150,237,0.12) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(8,109,215,0.08) 0%, transparent 50%), linear-gradient(180deg, #050d1a 0%, #0a1628 50%, #050d1a 100%)",
-      }}
-    >
-      <Canvas dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }}>
+    <div className="scene-container" style={sceneContainerStyle}>
+      <Canvas dpr={[1, reduceMotion ? 1 : 1.5]} frameloop={reduceMotion ? "demand" : "always"} gl={{ antialias: !reduceMotion, alpha: true }}>
         <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={60} />
 
         {/* Lighting - Docker Blue atmosphere */}

@@ -10,19 +10,15 @@ function App() {
 
   const commands = [
     {
-      text: "container-diet analyze python:3.9 --auto-fix",
+      text: "container-diet analyze --dockerfile Dockerfile --auto-fix",
       output: [
-        "🔍 Scanning image: python:3.9",
-        "Pulling from remote...",
-        "Analyzing remote image: python:3.9",
-        "",
-        "📊 IMAGE SUMMARY",
-        "📦 Image: python:3.9",
-        "📊 Total Size: 386.32 MB",
-        "🍰 Layers: 7",
+        "📄 Reading Dockerfile: Dockerfile",
         "",
         "🤖 [AI ANALYSIS]",
-        "🚢 Asking the Container Dietician for insights...",
+        "🚢 Asking the Container Dietician for insights using openrouter (openai/gpt-4o-mini)...",
+        "",
+        "🛠️  AUTO-FIX GENERATED: Dockerfile.diet",
+        "✓ Recommended changes saved. Compare and apply to slim down that image! 📉",
       ],
     },
   ];
@@ -95,18 +91,13 @@ function App() {
     fetch("https://api.github.com/repos/k1lgor/container-diet")
       .then((res) => res.json())
       .then((data) => setStars(data.stargazers_count))
-      .catch((err) => console.error("Failed to fetch stars:", err));
+      .catch(() => setStars(0));
   }, []);
 
   return (
     <div className="app-container">
-      {/* Docker grid overlay */}
       <div className="scanlines"></div>
-
-      {/* 3D Scene Background */}
       <Scene3D />
-
-      {/* Ambient glow orbs */}
       <div className="background-decoration">
         <div className="glow-orb glow-orb-top"></div>
         <div className="glow-orb glow-orb-bottom"></div>
@@ -125,11 +116,10 @@ function App() {
             <h2 className="logo-text">
               Container <span className="logo-highlight">Diet</span>
             </h2>
-            <span className="logo-version">v0.3.0</span>
+            <span className="logo-version">v0.5.0</span>
           </div>
 
           <div className="header-badges">
-            {/* Product Hunt Badge */}
             <a
               href="https://www.producthunt.com/products/container-diet"
               target="_blank"
@@ -144,47 +134,35 @@ function App() {
               />
             </a>
 
-            {/* GitHub Stars */}
             <a
               href="https://github.com/k1lgor/container-diet"
               target="_blank"
               rel="noopener noreferrer"
               className="github-badge"
             >
-              <svg
-                height="16"
-                viewBox="0 0 16 16"
-                width="16"
-                fill="currentColor"
-              >
+              <svg height="16" viewBox="0 0 16 16" width="16" fill="currentColor">
                 <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
               </svg>
               <span>Star</span>
-              {stars !== null && <span className="star-count">{stars}</span>}
+              {stars != null && stars > 0 && <span className="star-count">{stars}</span>}
             </a>
           </div>
         </motion.div>
       </header>
 
-      {/* ─── Main Content ─── */}
       <main className="main-content">
-        {/* Hero Section */}
+        {/* ─── Hero ─── */}
         <section className="hero">
           <div className="hero-content">
-            {/* Left: Hero Text */}
             <motion.div
               className="hero-text"
               initial={{ x: -60, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              transition={{
-                duration: 0.8,
-                delay: 0.2,
-                ease: [0.22, 1, 0.36, 1],
-              }}
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             >
               <div className="version-badge">
                 <span className="status-dot"></span>
-                <span>v0.3.0 — Now Available</span>
+                <span>v0.5.0 — Multi-Provider + MCP</span>
               </div>
 
               <h1 className="hero-title">
@@ -193,9 +171,10 @@ function App() {
               </h1>
 
               <p className="hero-description">
-                The ultimate CLI tool to analyze, optimize, and secure your
-                Docker images in seconds. Reduce bloat by up to 90% without
-                breaking your application.
+                AI-powered CLI tool that analyzes your Docker images and
+                Dockerfiles, then gives you sassy, actionable optimization
+                advice. Works with OpenAI, Anthropic, Ollama, and any
+                OpenAI-compatible API — plus an MCP server for AI agents.
               </p>
 
               <div className="cta-buttons">
@@ -231,30 +210,26 @@ function App() {
 
               <div className="features-list">
                 <div className="feature-item">
-                  <span className="check-icon">✓</span>
-                  Open Source
+                  <span className="check-icon">✓</span>12+ AI Providers
                 </div>
                 <div className="feature-item">
-                  <span className="check-icon">✓</span>
-                  CI/CD Integrated
+                  <span className="check-icon">✓</span>MCP Server
                 </div>
                 <div className="feature-item">
-                  <span className="check-icon">✓</span>
-                  Docker & Podman
+                  <span className="check-icon">✓</span>Docker & Podman
+                </div>
+                <div className="feature-item">
+                  <span className="check-icon">✓</span>CI/CD Ready
                 </div>
               </div>
             </motion.div>
 
-            {/* Right: Terminal Window */}
+            {/* Terminal */}
             <motion.div
               className="terminal-wrapper"
               initial={{ x: 60, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              transition={{
-                duration: 0.8,
-                delay: 0.4,
-                ease: [0.22, 1, 0.36, 1],
-              }}
+              transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
             >
               <div className="terminal-glow"></div>
               <div className="terminal-window">
@@ -304,44 +279,29 @@ function App() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                       >
-                        <div className="warning-box">
-                          <span className="warning-label">⚠ WARNING:</span> Your
-                          Python layer is carrying extra weight! 🐘 Using
-                          `python:3.9` instead of `3.9-slim` is like wearing
-                          lead boots for a sprint.
-                        </div>
                         <div className="suggestion-box">
-                          <span className="suggestion-label">
-                            ✓ SUGGESTION:
-                          </span>{" "}
-                          Switch to a slim base or use a multi-stage build to
-                          purge build tools like `gcc` and `make`.
+                          <span className="suggestion-label">✓ SUGGESTION:</span>{" "}
+                          Use <code>python:3.9-slim</code> instead of the full
+                          image — save ~300MB instantly. Add{" "}
+                          <code>--no-install-recommends</code> to apt-get and
+                          clean up in the same layer.
                         </div>
                         <div className="autofix-box">
                           <div className="autofix-header">
-                            <span className="autofix-label">
-                              🛠️ AUTO-FIX GENERATED
-                            </span>
-                            <span className="autofix-path">
-                              Dockerfile.diet
-                            </span>
+                            <span className="autofix-label">🛠️ AUTO-FIX</span>
+                            <span className="autofix-path">Dockerfile.diet</span>
                           </div>
                           <pre className="code-snippet">
-                            <span className="keyword">FROM</span>{" "}
-                            python:3.9-slim <span className="keyword">AS</span>{" "}
-                            final
-                            <span className="comment">
-                              {"\n"}# Purged 220MB of build tools! 📉
-                            </span>
-                            {"\n"}
+                            <span className="keyword">FROM</span> python:3.12-slim{" "}
+                            <span className="keyword">AS</span> base{"\n"}
                             <span className="keyword">RUN</span> apt-get update
-                            && apt-get install -y --no-install-recommends \
-                            {"\n"}
+                            && apt-get install -y --no-install-recommends \{"\n"}
                             {"    "}
                             <span className="highlight">libpq5</span> &&{" "}
                             <span className="keyword">rm</span> -rf
                             /var/lib/apt/lists/*{"\n"}
-                            <span className="keyword">USER</span> appuser
+                            <span className="keyword">USER</span> appuser{"\n"}
+                            <span className="comment"># 412MB → 89MB 📉</span>
                           </pre>
                         </div>
                       </motion.div>
@@ -353,7 +313,56 @@ function App() {
           </div>
         </section>
 
-        {/* ─── Features Section ─── */}
+        {/* ─── Quick Install ─── */}
+        <motion.section
+          className="section"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="section-header">
+            <h2 className="section-title">Get Started in Seconds</h2>
+            <p className="section-description">
+              One command to install, one command to configure, one command to
+              ship slimmer containers.
+            </p>
+          </div>
+          <div className="install-grid">
+            {[
+              {
+                step: "1",
+                title: "Install",
+                code: "go install github.com/k1lgor/container-diet/cmd/cli@latest",
+              },
+              {
+                step: "2",
+                title: "Configure",
+                code: "container-diet init-config\n# Edit ~/.config/container-diet/config.yaml",
+              },
+              {
+                step: "3",
+                title: "Analyze",
+                code: "container-diet analyze --dockerfile Dockerfile --auto-fix",
+              },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                className="install-card"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: i * 0.1 }}
+              >
+                <span className="install-step">{item.step}</span>
+                <h3 className="install-title">{item.title}</h3>
+                <pre className="install-code">{item.code}</pre>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
+
+        {/* ─── Features ─── */}
         <motion.section
           className="section features-section"
           id="features"
@@ -363,11 +372,10 @@ function App() {
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
           <div className="section-header">
-            <h2 className="section-title">AI-Powered Container Optimization</h2>
+            <h2 className="section-title">Everything You Need</h2>
             <p className="section-description">
-              Container Diet analyzes your Docker images and Dockerfiles to
-              provide actionable, sassy-but-helpful optimization advice powered
-              by GPT-4o.
+              From instant Dockerfile audits to AI agent integration — Container
+              Diet has you covered at every stage of your container workflow.
             </p>
           </div>
 
@@ -376,27 +384,39 @@ function App() {
               {
                 icon: "🧠",
                 iconClass: "purple",
-                title: "AI-Driven Analysis",
-                desc: "Uses OpenAI (GPT-4o) to provide human-level, context-aware optimization tips. Get entertaining, roast-style feedback that makes optimization fun.",
+                title: "Multi-Provider AI",
+                desc: "Works with OpenAI, Anthropic, OpenRouter, Ollama, Groq, DeepSeek, Mistral, xAI, and any OpenAI-compatible API. Bring your own key or run locally with Ollama.",
               },
               {
-                icon: "🐳",
-                iconClass: "cyan",
-                title: "Flexible Image Sources",
-                desc: "Analyze local daemon images, pull remote images with --remote, or auto-pull missing local images with --pull-missing. Works with Docker and Podman.",
-              },
-              {
-                icon: "🛡️",
-                iconClass: "purple",
-                title: "Security Focused",
-                desc: "Detects root user violations, exposed secrets, unnecessary packages, and permission issues. Keep your containers secure by default.",
+                icon: "🔌",
+                iconClass: "accent",
+                title: "MCP Server",
+                desc: "Expose Container Diet as a tool for Claude Desktop, Cursor, Codex, and any MCP-compatible AI agent. Analyze Dockerfiles and images directly from your editor.",
+                highlighted: true,
               },
               {
                 icon: "🛠️",
-                iconClass: "accent",
+                iconClass: "cyan",
                 title: "Auto-Fix Generation",
-                desc: "Automatically generate an optimized Dockerfile (Dockerfile.diet) based on analysis. Purge build tools, optimize layers, and apply security best practices in one command.",
-                highlighted: true,
+                desc: "Generate an optimized Dockerfile.diet automatically. Multi-stage builds, slim base images, layer caching, and security hardening — applied in one flag.",
+              },
+              {
+                icon: "📊",
+                iconClass: "purple",
+                title: "Layer Analysis + JSON",
+                desc: "Get per-layer size breakdowns with tabular CLI output or pipeable JSON (--format json). Perfect for CI/CD pipelines and automated auditing.",
+              },
+              {
+                icon: "🛡️",
+                iconClass: "cyan",
+                title: "Security Hardening",
+                desc: "Detects root user violations, exposed secrets, 777 permissions, SSH daemons, and stale base images. Keeps your containers secure by default.",
+              },
+              {
+                icon: "🐳",
+                iconClass: "purple",
+                title: "Docker + Podman",
+                desc: "Analyze local daemon images, pull from remote registries, or auto-pull missing images. Works with Docker and Podman via Docker-compatible socket.",
               },
             ].map((feature, i) => (
               <motion.div
@@ -417,7 +437,7 @@ function App() {
           </div>
         </motion.section>
 
-        {/* ─── Stats Section ─── */}
+        {/* ─── Stats ─── */}
         <motion.section
           className="section stats-section"
           initial={{ opacity: 0, y: 40 }}
@@ -427,22 +447,10 @@ function App() {
         >
           <div className="stats-grid">
             {[
-              { value: "GPT-4o", label: "AI Model", colorClass: "cyan" },
-              {
-                value: "Local/Remote",
-                label: "Image Sources",
-                colorClass: "white",
-              },
-              {
-                value: "Docker + Podman",
-                label: "Platform Support",
-                colorClass: "white",
-              },
-              {
-                value: "Open Source",
-                label: "MIT License",
-                colorClass: "purple",
-              },
+              { value: "12+", label: "AI Providers", colorClass: "cyan" },
+              { value: "4", label: "MCP Tools", colorClass: "accent" },
+              { value: "JSON", label: "CI/CD Output", colorClass: "white" },
+              { value: "MIT", label: "Open Source", colorClass: "purple" },
             ].map((stat, i) => (
               <motion.div
                 key={i}

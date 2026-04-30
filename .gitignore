@@ -38,4 +38,6 @@ Thumbs.db
 
 # Project specific
 .playwright-mcp/
-.agent/
+.container-diet/
+.pi/
+.oh-my-pi/

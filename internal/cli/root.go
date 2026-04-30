@@ -9,14 +9,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var version = "0.3.0"
+var version = "0.5.0"
 
 var rootCmd = &cobra.Command{
-	Use:     "container-diet",
-	Short:   "AI-powered Docker image slimming assistant",
-	Long:    "Container Diet helps you inspect Docker images and Dockerfiles, then gives practical AI optimization advice.",
-	Example: "  container-diet analyze nginx:latest\n  container-diet analyze my-app:latest --dockerfile Dockerfile\n  container-diet analyze python:3.11-slim --remote\n  container-diet analyze busybox --pull-missing",
-	Version: version,
+	Use:          "container-diet",
+	Short:        "AI-powered Docker image slimming assistant",
+	Long:         "Container Diet helps you inspect Docker images and Dockerfiles, then gives practical AI optimization advice.",
+	Example:      "  container-diet analyze nginx:latest\n  container-diet analyze my-app:latest --dockerfile Dockerfile\n  container-diet analyze python:3.11-slim --remote\n  container-diet analyze busybox --pull-missing",
+	Version:      version,
+	SilenceErrors: true,
+	SilenceUsage:  true,
 }
 
 func init() {

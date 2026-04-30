@@ -33,6 +33,9 @@ func AnalyzeImage(imageName string, allowRemote bool, pullMissing bool) (*ImageA
 	var source string
 
 	if allowRemote {
+		if _, err := name.ParseReference(imageName); err != nil {
+			return nil, fmt.Errorf("invalid image name: %w", err)
+		}
 		fmt.Println("Pulling from remote...")
 		img, err = crane.Pull(imageName)
 		if err != nil {

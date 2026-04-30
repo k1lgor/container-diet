@@ -80,6 +80,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* ============================================================
    APP CONTAINER
    ============================================================ */
@@ -1191,6 +1203,10 @@ p {
 .stat-value.white {
   color: white;
 }
+.stat-value.accent {
+  color: var(--docker-cyan);
+  text-shadow: 0 0 20px rgba(0, 187, 255, 0.5);
+}
 
 .stat-label {
   font-size: 0.6875rem;
@@ -1204,6 +1220,71 @@ p {
 /* ============================================================
    FOOTER
    ============================================================ */
+/* ============================================================
+   INSTALL SECTION — Quick Start Cards
+   ============================================================ */
+.install-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.install-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.install-card:hover {
+  border-color: rgba(36, 150, 237, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3), var(--glow-shadow);
+}
+
+.install-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--docker-blue), var(--docker-blue-dark));
+  color: white;
+  font-weight: 900;
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 0 12px rgba(36, 150, 237, 0.4);
+}
+
+.install-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.install-code {
+  background: rgba(5, 13, 26, 0.8);
+  border: 1px solid rgba(36, 150, 237, 0.15);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--text-secondary);
+  text-align: left;
+  overflow-x: auto;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
 .footer {
   width: 100%;
   background: var(--bg-color);

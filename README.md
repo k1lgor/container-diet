@@ -10,11 +10,13 @@ Container Diet is a futuristic, AI-powered CLI tool that analyzes your Docker im
 
 ## ✨ Features
 
-- **🧠 AI-Driven Analysis**: Uses OpenAI (GPT-4o) to provide human-level, context-aware optimization tips.
+- **🧠 Multi-Provider AI**: Works with OpenAI, Anthropic, OpenRouter, Ollama, Groq, DeepSeek, Mistral, xAI, and any OpenAI-compatible API. Bring your own key or run locally.
+- **🔌 MCP Server**: Expose Container Diet as a tool for Claude Desktop, Cursor, Codex, and any MCP-compatible AI agent. Analyze Dockerfiles and images directly from your editor.
 - **🐳 Docker-Themed UI**: Beautiful CLI output with Docker-brand colors and nautical icons.
 - **🏠 Flexible Image Source**: Analyze local daemon images, pull remote images with `--remote`, or auto-pull missing local images with `--pull-missing`.
 - **🛡️ Security Focused**: Detects root user violations, exposed secrets, and unnecessary packages.
 - **🛠️ Auto-Fix**: Automatically generate an optimized version of your Dockerfile with the `--auto-fix` flag.
+- **📊 JSON Output**: Machine-readable `--format json` for CI/CD pipelines and automated auditing.
 - **🎭 "Container Dietician" Persona**: Enjoy entertaining, roast-style feedback that keeps optimization fun.
 
 ## 🚀 Installation
@@ -24,7 +26,7 @@ Container Diet is a futuristic, AI-powered CLI tool that analyzes your Docker im
 - Go 1.21+
 - Docker daemon running locally (required for local image analysis)
 - Optional: Podman via Docker-compatible API socket
-- OpenAI API Key
+- An API key for at least one AI provider (OpenAI, Anthropic, OpenRouter, Ollama, etc.)
 
 ### Install via Go
 
@@ -43,19 +45,27 @@ go build -o container-diet cmd/cli/main.go
 
 ## ⚙️ Configuration
 
-You must set your OpenAI API key before running the tool:
+You must configure at least one AI provider before running the tool.
+
+**Quick start:**
+```bash
+container-diet init-config
+# Edit ~/.config/container-diet/config.yaml — uncomment a provider, set api_key and default_model
+```
+
+Or set an environment variable (example for OpenAI):
 
 **Linux/macOS:**
-
 ```bash
 export OPENAI_API_KEY="sk-..."
 ```
 
 **Windows (PowerShell):**
-
 ```powershell
 $env:OPENAI_API_KEY="sk-..."
 ```
+
+Supported providers: OpenAI, Anthropic, OpenRouter, Ollama, Groq, DeepSeek, Mistral, xAI, Perplexity, Moonshot, Hugging Face, or any OpenAI-compatible custom endpoint.
 
 ## 📖 Usage
 
@@ -178,9 +188,11 @@ more. 🐳✨
 ## 🏗️ Project Structure
 
 - `cmd/cli`: Main entry point for the CLI.
-- `internal/cli`: CLI command definitions and logic.
-- `internal/ai`: OpenAI client integration.
+- `internal/cli`: CLI command definitions and logic (analyze, init-config, mcp).
+- `internal/ai`: Multi-provider AI integration (Anthropic, OpenAI-compatible).
 - `internal/analyzer`: Core image analysis logic (layers, size, config).
+- `internal/config`: YAML configuration with env var expansion and provider setup.
+- `internal/mcp`: MCP server exposing tools for AI agents (Claude, Cursor, etc.).
 - `samples/`: Collection of Dockerfiles for testing (Light to Nightmare). [See demo outputs](samples/README.md).
 
 ## 📄 License
