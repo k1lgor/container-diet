@@ -1,200 +1,258 @@
-# 🐳 Container Diet CLI
-
-**Slim down your Docker images with the power of AI.**
-
-Container Diet is a futuristic, AI-powered CLI tool that analyzes your Docker images and Dockerfiles to provide actionable, "sassy but helpful" optimization advice. It helps you reduce image size, improve security, and follow best practices.
-
 <div align="center">
-  <img src="assets/logo.png" alt="Container Diet Logo" width="250"/>
+  <img src="assets/logo.png" alt="Container Diet Logo" width="400" />
 </div>
 
-## ✨ Features
+# 🐳 Container Diet
 
-- **🧠 Multi-Provider AI**: Works with OpenAI, Anthropic, OpenRouter, Ollama, Groq, DeepSeek, Mistral, xAI, and any OpenAI-compatible API. Bring your own key or run locally.
-- **🔌 MCP Server**: Expose Container Diet as a tool for Claude Desktop, Cursor, Codex, and any MCP-compatible AI agent. Analyze Dockerfiles and images directly from your editor.
-- **🐳 Docker-Themed UI**: Beautiful CLI output with Docker-brand colors and nautical icons.
-- **🏠 Flexible Image Source**: Analyze local daemon images, pull remote images with `--remote`, or auto-pull missing local images with `--pull-missing`.
-- **🛡️ Security Focused**: Detects root user violations, exposed secrets, and unnecessary packages.
-- **🛠️ Auto-Fix**: Automatically generate an optimized version of your Dockerfile with the `--auto-fix` flag.
-- **📊 JSON Output**: Machine-readable `--format json` for CI/CD pipelines and automated auditing.
-- **🎭 "Container Dietician" Persona**: Enjoy entertaining, roast-style feedback that keeps optimization fun.
+**AI-powered Docker image optimization — because your containers could use a diet.**
 
-## 🚀 Installation
+Container Diet analyzes your Docker images and Dockerfiles, then serves up sassy, actionable advice backed by your choice of 12+ AI providers. Catch bloated layers, security holes, and missing best practices before they reach production. Works as a CLI, in CI/CD, or as an MCP tool inside your AI editor.
 
-### Prerequisites
+---
 
-- Go 1.21+
-- Docker daemon running locally (required for local image analysis)
-- Optional: Podman via Docker-compatible API socket
-- An API key for at least one AI provider (OpenAI, Anthropic, OpenRouter, Ollama, etc.)
+<p align="center">
+  <a href="https://github.com/k1lgor/container-diet/releases"><img src="https://img.shields.io/github/v/release/k1lgor/container-diet?color=2496ED&label=latest" alt="Release"></a>
+  <a href="https://github.com/k1lgor/container-diet/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-2496ED" alt="License"></a>
+  <a href="https://pkg.go.dev/github.com/k1lgor/container-diet"><img src="https://img.shields.io/badge/go-reference-2496ED" alt="Go Reference"></a>
+  <a href="https://www.producthunt.com/products/container-diet"><img src="https://img.shields.io/badge/Product_Hunt-featured-da552f" alt="Product Hunt"></a>
+</p>
 
-### Install via Go
+---
+
+## ⚡ Quick Start
 
 ```bash
+# 1. Install
 go install github.com/k1lgor/container-diet/cmd/cli@latest
-```
 
-### Build from Source
-
-```bash
-git clone https://github.com/k1lgor/container-diet.git
-cd container-diet
-go mod tidy
-go build -o container-diet cmd/cli/main.go
-```
-
-## ⚙️ Configuration
-
-You must configure at least one AI provider before running the tool.
-
-**Quick start:**
-```bash
+# 2. Configure your AI provider
 container-diet init-config
-# Edit ~/.config/container-diet/config.yaml — uncomment a provider, set api_key and default_model
+# → edit ~/.config/container-diet/config.yaml
+# → uncomment your provider, paste your API key
+
+# 3. Analyze
+container-diet analyze --dockerfile Dockerfile --auto-fix
 ```
 
-Or set an environment variable (example for OpenAI):
+That's it. You'll get a roast of your Dockerfile, actionable fixes, and a `Dockerfile.diet` with the optimizations applied.
 
-**Linux/macOS:**
-```bash
-export OPENAI_API_KEY="sk-..."
+---
+
+## 🧠 AI Providers
+
+Container Diet talks to **any** of these — bring the key you already have, or run locally for free.
+
+| Provider             | Config Key    | API Key Env Var      |
+| -------------------- | ------------- | -------------------- |
+| OpenAI               | `openai`      | `OPENAI_API_KEY`     |
+| Anthropic (native)   | `anthropic`   | `ANTHROPIC_API_KEY`  |
+| OpenRouter           | `openrouter`  | `OPENROUTER_API_KEY` |
+| Groq                 | `groq`        | `GROQ_API_KEY`       |
+| DeepSeek             | `deepseek`    | `DEEPSEEK_API_KEY`   |
+| Mistral              | `mistral`     | `MISTRAL_API_KEY`    |
+| xAI (Grok)           | `xai`         | `XAI_API_KEY`        |
+| Ollama (local, free) | `ollama`      | _none needed_        |
+| Perplexity           | `perplexity`  | `PERPLEXITY_API_KEY` |
+| Moonshot             | `moonshot`    | `MOONSHOT_API_KEY`   |
+| Hugging Face         | `huggingface` | `HF_API_TOKEN`       |
+| Custom endpoint      | `custom`      | `CUSTOM_API_KEY`     |
+
+Switch providers with `--provider` or set `default_provider` in your config.
+
+---
+
+## 🔌 MCP Server — AI Agent Integration
+
+Container Diet ships as an **MCP (Model Context Protocol) server** so AI agents can analyze containers directly from your editor.
+
+**Supported clients:** Claude Desktop · Cursor · Claude Code · Codex · any MCP-compatible agent
+
+**Add to your MCP client config:**
+
+```json
+{
+  "mcpServers": {
+    "container-diet": {
+      "command": "container-diet",
+      "args": ["mcp", "server"]
+    }
+  }
+}
 ```
 
-**Windows (PowerShell):**
-```powershell
-$env:OPENAI_API_KEY="sk-..."
-```
+No API keys in the MCP config — the server reads them from `~/.config/container-diet/config.yaml`.
 
-Supported providers: OpenAI, Anthropic, OpenRouter, Ollama, Groq, DeepSeek, Mistral, xAI, Perplexity, Moonshot, Hugging Face, or any OpenAI-compatible custom endpoint.
+**Tools exposed to AI agents:**
+
+| Tool                      | Description                                     |
+| ------------------------- | ----------------------------------------------- |
+| `analyze_dockerfile`      | AI analysis with optional auto-fix generation   |
+| `analyze_image`           | Layer breakdown + AI optimization advice        |
+| `get_optimization_advice` | General container advice from free-form context |
+| `get_image_summary`       | Quick metrics without burning AI tokens         |
+
+Full setup guide: `container-diet mcp init`
+
+---
 
 ## 📖 Usage
 
-### Analyze a Local Image
+### Analyze a Dockerfile
 
 ```bash
-container-diet analyze my-app:latest
+container-diet analyze --dockerfile Dockerfile
 ```
 
-### Analyze with Dockerfile Context
-
-Providing the Dockerfile gives the AI more context for better suggestions.
+### Analyze + Auto-Fix
 
 ```bash
-./container-diet analyze my-app:latest --dockerfile Dockerfile
+container-diet analyze --dockerfile Dockerfile --auto-fix
+# Writes Dockerfile.diet with optimizations applied
 ```
 
-### Analyze a Remote Image
-
-Use `--remote` to pull directly from a registry and analyze without requiring a local daemon image.
+### Analyze a Docker Image
 
 ```bash
-./container-diet analyze python:3.9-slim --remote
+# Local daemon
+container-diet analyze nginx:latest
+
+# Pull from registry
+container-diet analyze python:3.12-slim --remote
+
+# Auto-pull if missing locally
+container-diet analyze busybox --pull-missing
 ```
 
-### Pull Missing Local Images Automatically
-
-Use `--pull-missing` to keep local-first behavior, but auto-pull if the image is missing locally.
+### JSON Output (CI/CD)
 
 ```bash
-./container-diet analyze busybox --pull-missing
+container-diet analyze --dockerfile Dockerfile --format json
 ```
 
-### 🛠️ Automatically Generate Fixes (Auto-Fix)
+```json
+{
+  "advice": "⚠ WARNING: Root user detected...\n✓ SUGGESTION: Use non-root user...",
+  "fix": "FROM nginx:alpine\nUSER nginx\n..."
+}
+```
 
-The most powerful feature! Use `--auto-fix` to have the Container Dietician write the optimized Dockerfile for you.
+### Choose Provider + Model
 
 ```bash
-./container-diet analyze --dockerfile Dockerfile --auto-fix
+container-diet analyze --dockerfile Dockerfile --provider anthropic --model claude-sonnet-4-6
 ```
 
-This will generate a `Dockerfile.diet` file in the same directory. You can then compare it with your original and apply the improvements. **Works even without a source Dockerfile** by reverse-engineering the image layers!
+---
 
-### Podman Compatibility
+## 🎮 Demo
 
-For local analysis with Podman, expose Podman's Docker-compatible API socket and set `DOCKER_HOST` to it.
-
-### Full Help
-
-```bash
-./container-diet analyze --help
-```
-
-## 🎮 Demo Output
-
-Here is what happens when you feed the **"Nightmare Monolith"** Dockerfile to the Container Dietician:
-
-**Command:**
-
-```bash
-./container-diet analyze --dockerfile samples/Dockerfile.nightmare
-```
-
-**Output:**
+Running the "Nightmare Monolith" Dockerfile through Container Diet:
 
 ```text
-Reading Dockerfile: samples/Dockerfile.nightmare...
+📄 Reading Dockerfile: samples/Dockerfile.nightmare...
 
-🐳 [AI ANALYSIS COMPLETE]
-Asking the Container Dietician for insights... 🚢
+🤖 [AI ANALYSIS]
+🚢 Asking the Container Dietician for insights using openrouter (openai/gpt-4o-mini)
 
-Oh, honey, what do we have here? A "Monolith Monster" Dockerfile that's about to sink your ship
-with its fatty layers and spicy security risks! Let’s roll up our sleeves and clean this galactic
-mess. 🚀
+================================================================
+
+Oh, honey, what do we have here? A "Monolith Monster" Dockerfile that's
+about to sink your ship with its fatty layers and spicy security risks! 🚀
 
 ---
 
 ⚠ WARNING: Version Drift Alert!
-You've got a "fluffy" problem right at the start, darling! Using `ubuntu:latest` means you're
-playing roulette with your build environment. 🎰
+Using `ubuntu:latest` means you're playing roulette with your build
+environment. 🎰
 
-✓ SUGGESTION: Pin your base image to a specific version like `ubuntu:22.04` to keep things
-predictable.
+✓ SUGGESTION: Pin your base image to a specific version like
+`ubuntu:22.04` to keep things predictable.
 
 ---
 
 ⚠ WARNING: Apt-get Avalanche!
-Installing just about everything but the kitchen sink, are we? This is the definition of bloat,
-my dear. 🐘
+Installing everything but the kitchen sink? This is the definition of
+bloat, my dear. 🐘
 
-✓ SUGGESTION: Install only what's necessary for your app. Consider slimming it down by ditching
-`openjdk-11-jdk`, `build-essential`, `cmake`, and `gdb` unless you truly need them. Otherwise,
-you're just hoarding bytes.
-
----
-
-⚠ WARNING: Hazardous Permissions Play!
-777 permissions? I hope you’re wearing a hard hat! This is a security risk as wide as a black
-hole. 🌌
-
-✓ SUGGESTION: Use more restrictive permissions. Typically, `chmod -R 755` or `chmod -R 644`,
-depending on what’s needed for executing.
+✓ SUGGESTION: Ditch `openjdk-11-jdk`, `build-essential`, `cmake`, and
+`gdb` unless you truly need them.
 
 ---
 
-⚠ WARNING: Root Cabal Alert!
-Running SSH as root with root login permitted? You might as well hand over the keys to the
-universe. 🔑
+⚠ WARNING: 777 permissions? Root SSH? Root login permitted?
+You might as well hand over the keys to the universe. 🔑
 
-✓ SUGGESTION: Disable root login and use a non-root user. Also, ask yourself—do you really need
-SSH in a container? Usually, it's a sign you need to rethink your strategy.
+✓ SUGGESTION: Use non-root user, restrictive permissions. And ask
+yourself — do you really need SSH in a container?
 
 ---
 
-Oh, darling, let’s trim down that bloated ship before it swallows a sun. Your future workloads
-will thank you for the speed and safety tunes! Now, get to work, 🛠️ and remember: less is always
-more. 🐳✨
+Oh, darling, trim that bloated ship before it swallows a sun! 🐳✨
 ```
 
-## 🏗️ Project Structure
+---
 
-- `cmd/cli`: Main entry point for the CLI.
-- `internal/cli`: CLI command definitions and logic (analyze, init-config, mcp).
-- `internal/ai`: Multi-provider AI integration (Anthropic, OpenAI-compatible).
-- `internal/analyzer`: Core image analysis logic (layers, size, config).
-- `internal/config`: YAML configuration with env var expansion and provider setup.
-- `internal/mcp`: MCP server exposing tools for AI agents (Claude, Cursor, etc.).
-- `samples/`: Collection of Dockerfiles for testing (Light to Nightmare). [See demo outputs](samples/README.md).
+## ⚙️ Configuration
+
+Config file locations (searched in order, later overrides earlier):
+
+| Priority    | Path                                   | Scope       |
+| ----------- | -------------------------------------- | ----------- |
+| 1 (highest) | `--config <path>` flag                 | Per-command |
+| 2           | `.container-diet/config.yaml`          | Per-project |
+| 3 (lowest)  | `~/.config/container-diet/config.yaml` | Global      |
+
+**Minimal config example:**
+
+```yaml
+default_provider: "openrouter"
+
+providers:
+  openrouter:
+    api_key: "${OPENROUTER_API_KEY}" # or paste the key directly
+    base_url: "https://openrouter.ai/api/v1"
+    default_model: "openai/gpt-4o-mini"
+    timeout_seconds: 90
+
+analysis:
+  max_tokens: 4096
+
+ui:
+  theme: "docker"
+  show_emojis: true
+```
+
+Generate the full example with all providers: `container-diet init-config`
+
+Pro-tip: use `--local` for project-specific config, `--force` to overwrite.
+
+---
+
+## 🏗️ Architecture
+
+```
+cmd/cli/main.go               # Entry point
+internal/
+├── ai/                       # Provider interface + implementations
+│   ├── provider.go           # Interface, prompt builders, retry logic
+│   ├── anthropic.go          # Anthropic native API
+│   └── openai_compatible.go  # OpenAI, OpenRouter, Ollama, Groq, etc.
+├── analyzer/                 # Docker image layer inspection
+├── cli/                      # Cobra commands (analyze, init-config, mcp)
+├── config/                   # YAML config loading with env var expansion
+├── mcp/                      # MCP server (stdio transport, 4 tools)
+├── samples/                  # Test Dockerfiles (light → nightmare)
+└── web/                      # Landing page (React + Three.js)
+```
+
+---
 
 ## 📄 License
 
-[MIT](LICENSE)
+[MIT](LICENSE) © 2026 Container Diet
+
+---
+
+<p align="center">
+  <sub>Built with 🐳 and a touch of sass.</sub>
+</p>
