@@ -13,12 +13,12 @@
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
     "@types/canvas-confetti": "^1.9.0",
-    "@types/three": "^0.182.0",
+    "@types/three": "^0.184.0",
     "canvas-confetti": "^1.9.4",
     "framer-motion": "^12.38.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
-    "three": "^0.183.2"
+    "three": "^0.184.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
